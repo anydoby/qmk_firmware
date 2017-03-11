@@ -42,7 +42,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Otherwise, it needs KC_*
 [BASE] = KEYMAP(  // layer 0 : default
         // left hand
-        KC_ESC,         KC_F2,         KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_0,
+        KC_ESC,         KC_F2,         KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F8,
         KC_TAB,        KC_Q,         KC_W,   KC_E,   KC_R,   KC_T,   TG(QWERTY),
         KC_DELT,        ALT_T(KC_A),    CTL_T(KC_S),  SFT_T(KC_D),   KC_F,   KC_G,
         KC_LSFT,        CTL_T(KC_Z),  KC_X,   KC_C,   KC_V,   KC_B,   ALL_T(KC_NO),
