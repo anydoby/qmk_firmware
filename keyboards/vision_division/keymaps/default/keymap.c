@@ -1,12 +1,5 @@
-#include "vision_division.h"
-#include "action_layer.h"
-#include "eeconfig.h"
+#include QMK_KEYBOARD_H
 #include "led.h"
-
-#ifdef AUDIO_ENABLE
-    #include "audio.h"
-    #include "song_list.h"
-#endif
 
 enum keyboard_layers {
   LAYER_QWERTY = 0,
@@ -121,7 +114,7 @@ enum keyboard_macros {
 
 #define M_CP_CT             M(MACRO_COPY_CUT)
 
-#define M_COPY              KC_FN1
+#define M_COPY              MACROTAP(MACRO_COPY_CUT)
 
 #define SC_UNDO             LCTL(KC_Z)
 #define SC_REDO             LCTL(KC_Y)
@@ -135,10 +128,8 @@ enum keyboard_macros {
 #define SC_CCLS             LCTL(KC_F4)
 
 #define TG_NKRO             MAGIC_TOGGLE_NKRO
-#define OS_SHFT             KC_FN0
+#define OS_SHFT             OSM(MOD_LSFT)
 
-#define _______             KC_TRNS
-#define XXXXXXX             KC_NO
 #define ________________    _______, _______
 #define XXXXXXXXXXXXXXXX    XXXXXXX, XXXXXXX
 
@@ -299,16 +290,11 @@ float tone_scroll_off[][2] = SONG(SCROLL_LOCK_OFF_SOUND);
 
 #endif /* AUDIO_ENABLE */
 
-void persistant_default_layer_set(uint16_t default_layer)
+void persistent_default_layer_set(uint16_t default_layer)
 {
   eeconfig_update_default_layer(default_layer);
   default_layer_set(default_layer);
 }
-
-const uint16_t PROGMEM fn_actions[] = {
-  [0] = ACTION_MODS_ONESHOT(MOD_LSFT),
-  [1] = ACTION_MACRO_TAP(MACRO_COPY_CUT),
-};
 
 const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
 {
@@ -406,28 +392,28 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
   case MACRO_BREATH_SPEED_INC:
     if (record->event.pressed)
     {
-      breathing_speed_inc(1);
+      breathing_period_inc();
     }
     break;
 
   case MACRO_BREATH_SPEED_DEC:
     if (record->event.pressed)
     {
-      breathing_speed_dec(1);
+      breathing_period_dec();
     }
     break;
 
   case MACRO_BREATH_DEFAULT:
     if (record->event.pressed)
     {
-      breathing_defaults();
+      breathing_period_default();
     }
     break;
 
   case MACRO_QWERTY:
     if (record->event.pressed)
     {
-      persistant_default_layer_set(1UL<<LAYER_QWERTY);
+      persistent_default_layer_set(1UL<<LAYER_QWERTY);
     }
     break;
 
@@ -435,7 +421,7 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
     if (record->event.pressed)
     {
       layer_on(LAYER_UPPER);
-      breathing_speed_set(2);
+      breathing_period_set(2);
       breathing_pulse();
       update_tri_layer(LAYER_LOWER, LAYER_UPPER, LAYER_ADJUST);
     }
@@ -450,7 +436,7 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
     if (record->event.pressed)
     {
       layer_on(LAYER_LOWER);
-      breathing_speed_set(2);
+      breathing_period_set(2);
       breathing_pulse();
       update_tri_layer(LAYER_LOWER, LAYER_UPPER, LAYER_ADJUST);
     }
@@ -464,13 +450,13 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
   case MACRO_FUNCTION:
     if (record->event.pressed)
     {
-      breathing_speed_set(3);
+      breathing_period_set(3);
       breathing_enable();
       layer_on(LAYER_FUNCTION);
     }
     else
     {
-      breathing_speed_set(1);
+      breathing_period_set(1);
       breathing_self_disable();
       layer_off(LAYER_FUNCTION);
     }
@@ -559,32 +545,32 @@ void led_set_user(uint8_t usb_led)
     if ((usb_led & (1<<USB_LED_CAPS_LOCK)) && !(old_usb_led & (1<<USB_LED_CAPS_LOCK)))
     {
       // If CAPS LK LED is turning on...
-      PLAY_NOTE_ARRAY(tone_caps_on,  false, LEGATO);
+      PLAY_SONG(tone_caps_on);
     }
     else if (!(usb_led & (1<<USB_LED_CAPS_LOCK)) && (old_usb_led & (1<<USB_LED_CAPS_LOCK)))
     {
       // If CAPS LK LED is turning off...
-      PLAY_NOTE_ARRAY(tone_caps_off, false, LEGATO);
+      PLAY_SONG(tone_caps_off);
     }
     else if ((usb_led & (1<<USB_LED_NUM_LOCK)) && !(old_usb_led & (1<<USB_LED_NUM_LOCK)))
     {
       // If NUM LK LED is turning on...
-      PLAY_NOTE_ARRAY(tone_numlk_on,  false, LEGATO);
+      PLAY_SONG(tone_numlk_on);
     }
     else if (!(usb_led & (1<<USB_LED_NUM_LOCK)) && (old_usb_led & (1<<USB_LED_NUM_LOCK)))
     {
       // If NUM LED is turning off...
-      PLAY_NOTE_ARRAY(tone_numlk_off, false, LEGATO);
+      PLAY_SONG(tone_numlk_off);
     }
     else if ((usb_led & (1<<USB_LED_SCROLL_LOCK)) && !(old_usb_led & (1<<USB_LED_SCROLL_LOCK)))
     {
       // If SCROLL LK LED is turning on...
-      PLAY_NOTE_ARRAY(tone_scroll_on,  false, LEGATO);
+      PLAY_SONG(tone_scroll_on);
     }
     else if (!(usb_led & (1<<USB_LED_SCROLL_LOCK)) && (old_usb_led & (1<<USB_LED_SCROLL_LOCK)))
     {
       // If SCROLL LED is turning off...
-      PLAY_NOTE_ARRAY(tone_scroll_off, false, LEGATO);
+      PLAY_SONG(tone_scroll_off);
     }
   }
 
@@ -594,29 +580,29 @@ void led_set_user(uint8_t usb_led)
 void startup_user()
 {
   _delay_ms(10); // gets rid of tick
-  // PLAY_NOTE_ARRAY(tone_my_startup, false, STACCATO);
+  // PLAY_SONG(tone_my_startup);
 }
 
 void shutdown_user()
 {
-  // PLAY_NOTE_ARRAY(tone_my_goodbye, false, STACCATO);
+  // PLAY_SONG(tone_my_goodbye);
   _delay_ms(2000);
   stop_all_notes();
 }
 
 void audio_on_user(void)
 {
-  PLAY_NOTE_ARRAY(tone_audio_on, false, STACCATO);
+  PLAY_SONG(tone_audio_on);
 }
 
 void music_on_user(void)
 {
-  PLAY_NOTE_ARRAY(tone_music_on, false, STACCATO);
+  PLAY_SONG(tone_music_on);
 }
 
 void music_scale_user(void)
 {
-  PLAY_NOTE_ARRAY(music_scale, false, STACCATO);
+  PLAY_SONG(music_scale);
 }
 
 #endif /* AUDIO_ENABLE */
