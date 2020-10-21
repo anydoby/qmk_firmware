@@ -1,4 +1,4 @@
-#include "ergodox.h"
+#include "ergodox_ez.h"
 #include "debug.h"
 #include "action_layer.h"
 #include "version.h"
@@ -12,12 +12,14 @@
 #define CMD_V 124 // dvorak location of the V character on a QWERTY keyboard
 #define CMD_LEFT 125
 #define CMD_RIGHT 126
+#define PSCREEN_APP 127
+#define PSCREEN_MAC 128
 
 enum custom_keycodes {
   PLACEHOLDER = SAFE_RANGE, // can always be here
   EPRM,
   VRSN,
-  RGB_SLD
+  RGB_SLD,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -26,13 +28,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,--------------------------------------------------.           ,--------------------------------------------------.
  * | Esc    |   F2 |   F3 |   F4 |  F5  |   F6 | F8   |           | 1    |   F7 |  F8  |  F9  |  F10 |  F11 |  F12   |
  * |--------+------+------+------+------+-------------|           |------+------+------+------+------+------+--------|
- * | Tab    |   Q  |   W  |   E  |   R  |   T  |  L5  |           |  L1  |   Y  |   U  |   I  |   O  |   P  |   \    |
+ * | Tab    |   Q  |   W  |   E  |   R  |   T  | APScr|           |PrScn |   Y  |   U  |   I  |   O  |   P  |   \    |
  * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
  * | Del    | Alt/A|Ctrl/S|LSft/D|Cmd/F |   G  |------|           |------|   H  |   J  | K/L3 | L/L2 |   ;  |' / Cmd |
- * |--------+------+------+------+------+------| Hyper|           | L3   |------+------+------+------+------+--------|
- * | LShift |Z/Ctrl|   X  |   C  |   V  |Cmd/B  |      |           |      | Alt/N| Cmd/M|   ,  |   .  |//Ctrl| RShift |
+ * |--------+------+------+------+------+------| PrMac|           | L3   |------+------+------+------+------+--------|
+ * | LShift |Z/Ctrl|   X  |   C  |   V  |Cmd/B |      |           |      | Alt/N| Cmd/M| ,  |   .  |//Ctrl| RShift |
  * `--------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
- *   |~L1|AltShf|LGui| Left | Right|                                       |  Up  | Down |   [  |   ]  | ~L1  |
+ *   |~L1|PgDown|PgUp| Left | Right|                                       |  Up  | Down |   [  |   ]  | ~  |
  *   `----------------------------------'                                       `----------------------------------'
  *                                        ,-------------.       ,-------------.
  *                                        | App  | LGui |       | Alt  |Ctrl/Esc|
@@ -44,22 +46,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 // If it accepts an argument (i.e, is a function), it doesn't need KC_.
 // Otherwise, it needs KC_*
-[BASE] = KEYMAP(  // layer 0 : default
+[BASE] = LAYOUT_ergodox(  // layer 0 : default
         // left hand
         KC_ESC,         KC_F2,         KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F8,
-        KC_TAB,        KC_Q,         KC_W,   KC_E,   KC_R,   KC_T,   TG(QWERTY),
+        KC_TAB,        KC_Q,         KC_W,   KC_E,   KC_R,   KC_T,   M(PSCREEN_APP),
         KC_DELT,        ALT_T(KC_A),    CTL_T(KC_S),  SFT_T(KC_D),   GUI_T(KC_F),   KC_G,
-        KC_LSFT,        CTL_T(KC_Z),  KC_X,   KC_C,   KC_V,   GUI_T(KC_B),   ALL_T(KC_NO),
-		MO(SYMB),       LALT(KC_LSFT), KC_LGUI,  KC_LEFT,KC_RGHT,
+        KC_LSFT,        CTL_T(KC_Z),  KC_X,   KC_C,   KC_V,   GUI_T(KC_B),   M(PSCREEN_MAC),
+		MO(SYMB),       KC_PGDN, KC_PGUP,  KC_LEFT,KC_RGHT,
                                               ALT_T(KC_APP),  KC_LGUI,
                                                               KC_HOME,
                                                KC_SPC,KC_BSPC,KC_END,
-        // right hand 
+        // right hand
              KC_1,     KC_F7,   KC_F8,   KC_F9,   KC_F10,   KC_F11,             KC_F12,
-             TG(SYMB),    KC_Y,   KC_U,  KC_I,   KC_O,   KC_P,             KC_BSLS,
+             KC_PSCR,    KC_Y,   KC_U,  KC_I,   KC_O,   KC_P,             KC_BSLS,
                           KC_H,   KC_J,  LT(NAVI,KC_K),   LT(MDIA,KC_L),   KC_SCLN,GUI_T(KC_QUOT),
              TG(NAVI),ALT_T(KC_N),   GUI_T(KC_M),  KC_COMM,KC_DOT, CTL_T(KC_SLSH),   KC_RSFT,
-                                  KC_UP, KC_DOWN,KC_LBRC,KC_RBRC,          MO(SYMB),
+                                  KC_UP, KC_DOWN,KC_LBRC,KC_RBRC,          KC_TILD,
              KC_LALT,        CTL_T(KC_ESC),
              KC_PGUP,
              KC_PGDN,KC_TAB, KC_ENT
@@ -86,7 +88,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                                 `--------------------'       `--------------------'
  */
 // SYMBOLS
-[SYMB] = KEYMAP(
+[SYMB] = LAYOUT_ergodox(
        // left hand
        VRSN,   KC_1,  KC_2,  KC_3,  KC_4,  KC_5,  KC_TRNS,
        KC_TRNS,KC_EXLM,KC_AT, /* KC_LCBR */KC_UNDS ,/*KC_RCBR*/KC_PLUS,KC_PIPE,KC_TRNS,
@@ -128,7 +130,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                                 `--------------------'       `--------------------'
  */
 // MEDIA AND MOUSE
-[MDIA] = KEYMAP(
+[MDIA] = LAYOUT_ergodox(
        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
        KC_TRNS, KC_TRNS, KC_WH_L, KC_MS_U, KC_WH_R, KC_TRNS, KC_TRNS,
        KC_TRNS, KC_TRNS, KC_MS_L, KC_MS_D, KC_MS_R, KC_TRNS,
@@ -169,7 +171,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                                 `--------------------'       `--------------------'
  */
 // CURSOR NAVIGATION
-[NAVI] = KEYMAP(
+[NAVI] = LAYOUT_ergodox(
        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
        KC_TRNS, KC_TRNS, KC_HOME, KC_UP, KC_END, KC_TRNS, KC_TRNS,
        KC_TRNS, KC_PGUP, KC_LEFT, KC_DOWN, KC_RIGHT, KC_TRNS,
@@ -209,7 +211,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                                 |      |ace   | End  |       | PgDn |        |      |
  *                                 `--------------------'       `----------------------'
  */
-[QWERTY] = KEYMAP(  // layer 5 : default qwerty
+[QWERTY] = LAYOUT_ergodox(  // layer 5 : default qwerty
         // left hand
         KC_RBRACKET,         KC_1,         KC_2,   KC_3,   KC_4,   KC_5,   KC_LEFT,
         KC_DELT,        KC_Q,         KC_W,   KC_E,   KC_R,   KC_T,   KC_TRNS,
@@ -280,6 +282,21 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
             register_code(KC_RIGHT);
             unregister_code(KC_RIGHT);
             unregister_code(KC_LGUI);
+        }
+        break;
+        case PSCREEN_APP:
+        if (record->event.pressed) {
+            SEND_STRING(SS_LALT(SS_TAP(X_PSCREEN)));
+        }
+        break;
+        case PSCREEN_MAC:
+        if (record->event.pressed) {
+            register_code(KC_LGUI);
+            register_code(KC_LSFT);
+            register_code(KC_4);
+            unregister_code(KC_LGUI);
+            unregister_code(KC_LSFT);
+            unregister_code(KC_4);
         }
         break;
       }
