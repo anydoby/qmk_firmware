@@ -12,8 +12,6 @@
 #define CMD_V 124 // dvorak location of the V character on a QWERTY keyboard
 #define CMD_LEFT 125
 #define CMD_RIGHT 126
-#define PSCREEN_APP 127
-#define PSCREEN_MAC 128
 
 enum custom_keycodes {
   PLACEHOLDER = SAFE_RANGE, // can always be here
@@ -49,19 +47,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [BASE] = LAYOUT_ergodox(  // layer 0 : default
         // left hand
         KC_ESC,         KC_F2,         KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F8,
-        KC_TAB,        KC_Q,         KC_W,   KC_E,   KC_R,   KC_T,   M(PSCREEN_APP),
+        KC_TAB,        KC_Q,         KC_W,   KC_E,   KC_R,   KC_T,   RALT_T(KC_PSCREEN),
         KC_DELT,        ALT_T(KC_A),    CTL_T(KC_S),  SFT_T(KC_D),   GUI_T(KC_F),   KC_G,
-        KC_LSFT,        CTL_T(KC_Z),  KC_X,   KC_C,   KC_V,   GUI_T(KC_B),   M(PSCREEN_MAC),
+        KC_LSFT,        CTL_T(KC_Z),  KC_X,   KC_C,   KC_V,   GUI_T(KC_B),   SCMD_T(KC_4),
 		MO(SYMB),       KC_PGDN, KC_PGUP,  KC_LEFT,KC_RGHT,
                                               ALT_T(KC_APP),  KC_LGUI,
                                                               KC_HOME,
                                                KC_SPC,KC_BSPC,KC_END,
         // right hand
              KC_1,     KC_F7,   KC_F8,   KC_F9,   KC_F10,   KC_F11,             KC_F12,
-             KC_PSCR,    KC_Y,   KC_U,  KC_I,   KC_O,   KC_P,             KC_BSLS,
+             KC_PSCREEN,    KC_Y,   KC_U,  KC_I,   KC_O,   KC_P,             KC_BSLS,
                           KC_H,   KC_J,  LT(NAVI,KC_K),   LT(MDIA,KC_L),   KC_SCLN,GUI_T(KC_QUOT),
-             TG(NAVI),ALT_T(KC_N),   GUI_T(KC_M),  KC_COMM,KC_DOT, CTL_T(KC_SLSH),   KC_RSFT,
-                                  KC_UP, KC_DOWN,KC_LBRC,KC_RBRC,          KC_TILD,
+             KC_TILD,ALT_T(KC_N),   GUI_T(KC_M),  KC_COMM,KC_DOT, CTL_T(KC_SLSH),   KC_RSFT,
+                                  KC_UP, KC_DOWN,KC_LBRC,KC_RBRC,          MO(SYMB),
              KC_LALT,        CTL_T(KC_ESC),
              KC_PGUP,
              KC_PGDN,KC_TAB, KC_ENT
@@ -282,21 +280,6 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
             register_code(KC_RIGHT);
             unregister_code(KC_RIGHT);
             unregister_code(KC_LGUI);
-        }
-        break;
-        case PSCREEN_APP:
-        if (record->event.pressed) {
-            SEND_STRING(SS_LALT(SS_TAP(X_PSCREEN)));
-        }
-        break;
-        case PSCREEN_MAC:
-        if (record->event.pressed) {
-            register_code(KC_LGUI);
-            register_code(KC_LSFT);
-            register_code(KC_4);
-            unregister_code(KC_LGUI);
-            unregister_code(KC_LSFT);
-            unregister_code(KC_4);
         }
         break;
       }
