@@ -18,6 +18,10 @@ enum custom_keycodes {
   EPRM,
   VRSN,
   RGB_SLD,
+  ALT_SCRN,
+  MAC_SCREENSHOT,
+  MAC_HOME,
+  MAC_END,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -46,11 +50,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Otherwise, it needs KC_*
 [BASE] = LAYOUT_ergodox(  // layer 0 : default
         // left hand
-        KC_ESC,         KC_F2,         KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F8,
-        KC_TAB,        KC_Q,         KC_W,   KC_E,   KC_R,   KC_T,   RALT_T(KC_PSCREEN),
-        KC_DELT,        ALT_T(KC_A),    CTL_T(KC_S),  SFT_T(KC_D),   GUI_T(KC_F),   KC_G,
-        KC_LSFT,        CTL_T(KC_Z),  KC_X,   KC_C,   KC_V,   GUI_T(KC_B),   SCMD_T(KC_4),
-		MO(SYMB),       KC_PGDN, KC_PGUP,  KC_LEFT,KC_RGHT,
+        KC_ESC,         KC_F2,         KC_F3,        KC_F4,       KC_F5,        KC_F6,        KC_F8,
+        KC_TAB,         KC_Q,          KC_W,         KC_E,        KC_R,         KC_T,         ALT_SCRN,
+        KC_DELT,        ALT_T(KC_A),   CTL_T(KC_S),  SFT_T(KC_D), GUI_T(KC_F),  KC_G,
+        KC_LSFT,        CTL_T(KC_Z),   KC_X,         KC_C,        KC_V,         GUI_T(KC_B),  MAC_SCREENSHOT,
+		MO(SYMB),       KC_PGDN,       KC_PGUP,      KC_LEFT,     KC_RGHT,
                                               ALT_T(KC_APP),  KC_LGUI,
                                                               KC_HOME,
                                                KC_SPC,KC_BSPC,KC_END,
@@ -173,7 +177,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
        KC_TRNS, KC_TRNS, KC_HOME, KC_UP, KC_END, KC_TRNS, KC_TRNS,
        KC_TRNS, KC_PGUP, KC_LEFT, KC_DOWN, KC_RIGHT, KC_TRNS,
-       KC_TRNS, KC_PGDOWN, M(CMD_LEFT), KC_TRNS, M(CMD_RIGHT), LCTL(KC_INS), KC_TRNS,
+       KC_TRNS, KC_PGDOWN, MAC_HOME, KC_TRNS, MAC_END, LCTL(KC_INS), KC_TRNS,
        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, LSFT(KC_DEL),
                                            KC_TRNS, KC_TRNS,
                                                     KC_TRNS,
@@ -308,6 +312,26 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #endif
       }
       return false;
+      break;
+    case ALT_SCRN:
+      if (record->event.pressed) {
+         SEND_STRING(SS_TAP(X_PSCREEN));
+      }
+      break;
+    case MAC_SCREENSHOT:
+      if (record->event.pressed) {
+        SEND_STRING(SS_LGUI(SS_LSFT(SS_TAP(X_4))));
+      }
+      break;
+    case MAC_HOME:
+      if (record->event.pressed) {
+          SEND_STRING(SS_LGUI(SS_TAP(X_LEFT)));
+      }
+      break;
+    case MAC_END:
+      if (record->event.pressed) {
+          SEND_STRING(SS_LGUI(SS_TAP(X_RIGHT)));
+      }
       break;
   }
   return true;
