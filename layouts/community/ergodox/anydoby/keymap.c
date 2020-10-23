@@ -8,10 +8,6 @@
 #define MDIA 2 // media keys
 #define NAVI  3 // navigation and cursor keys
 #define QWERTY 4  // standard QWERTY layout for Russian input
-#define CMD_C 123 // dvorak location of the C character on a QWERTY keyboard
-#define CMD_V 124 // dvorak location of the V character on a QWERTY keyboard
-#define CMD_LEFT 125
-#define CMD_RIGHT 126
 
 enum custom_keycodes {
   PLACEHOLDER = SAFE_RANGE, // can always be here
@@ -22,6 +18,8 @@ enum custom_keycodes {
   MAC_SCREENSHOT,
   MAC_HOME,
   MAC_END,
+  MAC_COPY,
+  MAC_PASTE,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -186,7 +184,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
        KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
                  KC_TRNS, KC_RCTRL, KC_TRNS, KC_RSHIFT, KC_TRNS, KC_TRNS,
-       KC_TRNS,  M(CMD_C), M(CMD_V), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS,  MAC_COPY, MAC_PASTE, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
                           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
        KC_TRNS, KC_TRNS,
        KC_TRNS,
@@ -254,38 +252,6 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
           eeconfig_init();
         }
         break;
-        case CMD_C:
-        if (record->event.pressed) {
-          register_code(KC_LGUI);
-          register_code(KC_I);
-          unregister_code(KC_I);
-          unregister_code(KC_LGUI);
-        }
-        break;
-        case CMD_V:
-        if (record->event.pressed) {
-            register_code(KC_LGUI);
-            register_code(KC_DOT);
-            unregister_code(KC_DOT);
-            unregister_code(KC_LGUI);
-        }
-        break;
-        case CMD_LEFT:
-        if (record->event.pressed) {
-          register_code(KC_LGUI);
-          register_code(KC_LEFT);
-          unregister_code(KC_LEFT);
-          unregister_code(KC_LGUI);
-        }
-        break;
-        case CMD_RIGHT:
-        if (record->event.pressed) {
-            register_code(KC_LGUI);
-            register_code(KC_RIGHT);
-            unregister_code(KC_RIGHT);
-            unregister_code(KC_LGUI);
-        }
-        break;
       }
     return MACRO_NONE;
 };
@@ -331,6 +297,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case MAC_END:
       if (record->event.pressed) {
           SEND_STRING(SS_LGUI(SS_TAP(X_RIGHT)));
+      }
+      break;
+    case MAC_COPY:
+      if (record->event.pressed) {
+          SEND_STRING(SS_LGUI(SS_TAP(X_I)));
+      }
+      break;
+    case MAC_PASTE:
+      if (record->event.pressed) {
+          SEND_STRING(SS_LGUI(SS_TAP(X_DOT)));
       }
       break;
   }
